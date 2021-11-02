@@ -1,4 +1,4 @@
-import api from './api/index'
+import api from './api/index';
 import cookieParser from 'cookie-parser';
 import createError from 'http-errors';
 import express from 'express';
