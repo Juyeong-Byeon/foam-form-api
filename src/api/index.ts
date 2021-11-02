@@ -3,9 +3,7 @@ const router = Router();
 
 //api response
 router.get('/', (req, res, next) => {
-	res.send({
-        id:'hello!'
-    })
+	
 });
 
 //api response

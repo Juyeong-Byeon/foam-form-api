@@ -4,10 +4,10 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 
-var sslOptions = {
-	key: fs.readFileSync('./cert/key.pem'),
-	cert: fs.readFileSync('./cert/cert.pem'),
-  };
+// var sslOptions = {
+// 	key: fs.readFileSync('./cert/key.pem'),
+// 	cert: fs.readFileSync('./cert/cert.pem'),
+//   };
 
 /**
  * Get port from environment and store in Express.
@@ -20,10 +20,11 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = process.env.MODE==='PRODUCT'
-	?https.createServer(sslOptions,app)
-	:http.createServer(app);
+// const server = process.env.MODE==='PRODUCT'
+// 	?https.createServer(sslOptions,app)
+// 	:http.createServer(app);
 
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

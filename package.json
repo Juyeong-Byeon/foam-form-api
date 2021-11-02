@@ -1,6 +1,6 @@
 {
-  "name": "express-template",
-  "version": "0.0.0",
+  "name": "foam-form",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "build": "tsc --build",
