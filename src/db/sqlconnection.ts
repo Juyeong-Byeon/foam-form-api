@@ -1,10 +1,24 @@
-import { DBConfig } from './config';
+import * as dotenv from 'dotenv';
+
 import mysql from 'mysql';
+dotenv.config();
+const DBConfig = process.env.MODE==="PRODUCT"
+?{
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.PASSWORD,
+	database:process.env.DB
+}
+:{
+    host:process.env.DB_DEV_HOST,
+    user: process.env.DB_DEV_USER,
+    password: process.env.DB_DEV_PASSWORD,
+	database:process.env.DB_DEV
+}
 
-const connection = mysql.createConnection({
-	host: DBConfig.host,
-	user: DBConfig.user,
-	password: DBConfig.password,
-});
+console.log(DBConfig);
 
-export default connection;
+
+const dbConnection = mysql.createConnection(DBConfig);
+
+export default dbConnection;
