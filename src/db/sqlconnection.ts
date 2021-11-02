@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 
 import mysql from 'mysql';
+
 dotenv.config();
 const DBConfig = process.env.MODE==="PRODUCT"
 ?{
@@ -15,9 +16,6 @@ const DBConfig = process.env.MODE==="PRODUCT"
     password: process.env.DB_DEV_PASSWORD,
 	database:process.env.DB_DEV
 }
-
-console.log(DBConfig);
-
 
 const dbConnection = mysql.createConnection(DBConfig);
 
