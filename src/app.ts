@@ -1,5 +1,6 @@
 import api from './api/index';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import createError from 'http-errors';
 import express from 'express';
 import indexRouter from './routes/index';
@@ -8,6 +9,12 @@ import path from 'path';
 
 const app = express();
 
+var corsOptions = {
+	origin: 'http://localhost:9000',
+	optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 // view engine setup
 app.set('views', './views');
 app.set('view engine', 'pug');

@@ -3,10 +3,7 @@ const router = Router();
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-	res.sendFile('');
-
+	res.send('hello');
 });
-
-
 
 export default router;
