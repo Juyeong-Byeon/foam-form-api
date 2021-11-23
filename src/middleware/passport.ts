@@ -15,7 +15,7 @@ passport.use(
 			if (!!user) {
 				return done(null, false);
 			} else {
-				return createUser(username, password, (user) => {
+				return createUser(username, UserUtils.getEncrypted('sha1', password), (user) => {
 					done(null, user);
 				});
 			}

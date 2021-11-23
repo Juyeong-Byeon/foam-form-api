@@ -7,12 +7,8 @@ export function getUser(username: string, password: string, callback: (error, ro
 }
 
 export function createUser(username: string, password: string, onSuccess: (user: User) => void) {
-	console.log(UserUtils.getEncrypted('sha1', password));
-	dbConnection.query(
-		`INSERT INTO USER(username,password) values("${username}","${UserUtils.getEncrypted('sha1', password)}")`,
-		(error, result) => {
-			const user: User = { idx: result.insertId, username, password };
-			onSuccess(user);
-		},
-	);
+	dbConnection.query(`INSERT INTO USER(username,password) values("${username}","${password}")`, (error, result) => {
+		const user: User = { idx: result.insertId, username, password };
+		onSuccess(user);
+	});
 }
