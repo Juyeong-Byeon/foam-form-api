@@ -1,8 +1,9 @@
 interface User {
 	idx: number;
-	name: string;
+	username: string;
+	password: string;
 	sub?: string;
-	email: string;
+	email?: string;
 }
 
 export type loginType = 'guest' | 'google' | 'integrated';
