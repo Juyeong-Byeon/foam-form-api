@@ -8,7 +8,7 @@ export function getUser(username: string, password: string, callback: (error, ro
 
 export function createUser(username: string, password: string, onSuccess: (user: User) => void) {
 	dbConnection.query(`INSERT INTO USER(username,password) values("${username}","${password}")`, (error, result) => {
-		const user: User = { idx: result.insertId, username, password };
+		const user: User = new User(result.insertId, username, password);
 		onSuccess(user);
 	});
 }

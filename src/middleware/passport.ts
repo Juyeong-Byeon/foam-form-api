@@ -4,8 +4,24 @@ import User from '../api/login/model/User';
 import { UserUtils } from '../utils/UserUtils';
 import _LocalStrategy from 'passport-local';
 import passport from 'passport';
+import passportJWT from 'passport-jwt';
+
+const JWTStrategy = passportJWT.Strategy;
+const Extract = passportJWT.ExtractJwt;
 
 const LocalStrategy = _LocalStrategy.Strategy;
+
+const option = {
+	jwtFromRequest: Extract.fromAuthHeaderAsBearerToken(),
+	secretOrKey: process.env.JWT_SECRET,
+};
+
+passport.use(
+	'jwt',
+	new JWTStrategy(option, ({ user }, done) => {
+		return !!user ? done(null, user) : done(new Error('INVALID_USER'), false);
+	}),
+);
 
 passport.use(
 	'register',
@@ -30,7 +46,6 @@ passport.use(
 		getUser(username, password, (_, rows, __) => {
 			const user: User = rows[0];
 
-			console.log(user);
 			if (!user || user?.password !== encryptedPw) {
 				return done(null, false);
 			} else {
@@ -42,20 +57,3 @@ passport.use(
 );
 
 export default passport;
-
-// const JWTStrategy = passportJWt.Strategy;
-// const ExtractJWT = passportJWt.ExtractJwt;
-
-// const LocalStrategy = passportJWt.Strategy;
-
-// const jwtOptions = {
-// 	jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-// 	secretOrKey: process.env.JWT_SECRET,
-// };
-
-// passport.use(
-// 	'jwt',
-// 	new JWTStrategy(jwtOptions, (jwtPayload, cb) => {
-// 		return;
-// 	}),
-// );
