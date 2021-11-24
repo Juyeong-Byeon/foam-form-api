@@ -1,1 +1,1 @@
-CREATE TABLE USER (idx INT NOT NULL AUTO_INCREMENT, google_sub varchar(30),name varchar(30), email valchar(30),primary key (idx))
+CREATE TABLE USER (idx INT NOT NULL AUTO_INCREMENT, google_sub varchar(30),username varchar(30), email varchar(30) password varchar(60),primary key (idx));

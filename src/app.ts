@@ -5,6 +5,7 @@ import createError from 'http-errors';
 import express from 'express';
 import indexRouter from './routes/index';
 import logger from 'morgan';
+import passport from './middleware/passport';
 import path from 'path';
 
 const app = express();
@@ -26,7 +27,10 @@ if (process.env.MODE === 'DEVELOP') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/api', api);
@@ -43,7 +47,7 @@ app.use((err, req, res, next) => {
 	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
 	// render the error page
-	res.status(err.status || 500);
+	res.status(err?.status || 500);
 	res.render('error');
 });
 
