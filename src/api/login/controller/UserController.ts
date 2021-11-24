@@ -4,7 +4,7 @@ import passport from 'passport';
 
 namespace UserController {
 	export async function signUp(req, res, next) {
-		passport.authenticate('register', { session: false }, (err: Error, user: User, _) => {
+		passport.authenticate('local_register', { session: false }, (err: Error, user: User, _) => {
 			if (err) {
 				res.status(500);
 			} else if (!user) {
