@@ -15,25 +15,46 @@ namespace UserController {
 		})(req, res, next);
 	}
 	export function signIn(req, res, next) {
-		passport.authenticate('local_login', { session: false }, (err: Error, user: User, _) => {
-			if (err) {
-				res.status(500);
-			} else if (!user) {
-				res.status(200).json({
-					message: '로그인에 실패했습니다.',
-					success: false,
-				});
+		passport.authenticate('local_login', { session: false }, (error: Error, user: User, _) => {
+			if (error) {
+				res.status(500).send(error);
 			}
+
 			req.login(user, { session: false }, (err) => {
 				if (err) {
-					res.send(err);
+					res.status(500).send(err);
+				} else if (!user) {
+					res.status(200).json({
+						message: '로그인에 실패했습니다.',
+						success: false,
+					});
 				}
+
 				const token = jwt.sign({ user }, process.env.JWT_SECRET, {
 					expiresIn: '1h',
 				});
 				res.status(200).json({ userToken: token, success: true });
 			});
 		})(req, res, next);
+	}
+
+	export function signInWithGoogle(req, res, next) {
+		passport.authenticate('google_login', { session: false }, (err, user) => {
+			req.login(user, { session: false }, (err) => {
+				if (err) {
+					res.status(500).send(err);
+				} else if (!user) {
+					res.status(200).json({
+						message: '로그인에 실패했습니다.',
+						success: false,
+					});
+				}
+				const token = jwt.sign({ user }, process.env.JWT_SECRET, {
+					expiresIn: '1h',
+				});
+				res.status(200).json({ userToken: token, success: true });
+			});
+		});
 	}
 
 	export function checkIsLoggedIn(req, res, next) {

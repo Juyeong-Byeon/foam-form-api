@@ -26,13 +26,15 @@ passport.use(
 );
 
 passport.use(
-	'google',
+	'google_login',
 	new GoogleTokenStrategy(
 		{
 			clientID: process.env.GOOGLE_CLIENT_ID,
 		},
 		function (parsedToken, googleId, done) {
 			dbConnection.query(`SELECT * from USER WHERE google_sub=${parsedToken.sub}`, (error, rows, fild) => {
+				if (error) done(error, false);
+
 				const user: User = rows[0];
 				if (!!user) {
 					done(null, user);
@@ -51,11 +53,12 @@ passport.use(
 		},
 		function (parsedToken, googleId, done) {
 			dbConnection.query(`SELECT * from USER WHERE google_sub=${parsedToken.sub}`, (error, rows, fild) => {
+				if (error) done(error, false);
+
 				const user: User = rows[0];
 				if (!!user) {
 					done(null, false);
 				} else {
-					console.log(parsedToken);
 					return createUser(
 						{
 							username: null,
