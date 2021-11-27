@@ -1,8 +1,10 @@
 import { createUser, getUser } from '../db/queryUtils';
 
+import GoogleTokenStrategy from 'passport-google-id-token';
 import User from '../api/login/model/User';
 import { UserUtils } from '../utils/UserUtils';
 import _LocalStrategy from 'passport-local';
+import dbConnection from '../db/sqlconnection';
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 
@@ -24,16 +26,73 @@ passport.use(
 );
 
 passport.use(
-	'register',
+	'google_login',
+	new GoogleTokenStrategy(
+		{
+			clientID: process.env.GOOGLE_CLIENT_ID,
+		},
+		function (parsedToken, googleId, done) {
+			dbConnection.query(`SELECT * from USER WHERE google_sub=${parsedToken.sub}`, (error, rows, fild) => {
+				if (error) done(error, false);
+
+				const user: User = rows[0];
+				if (!!user) {
+					done(null, user);
+				} else {
+				}
+			});
+		},
+	),
+);
+
+passport.use(
+	'google_register',
+	new GoogleTokenStrategy(
+		{
+			clientID: process.env.GOOGLE_CLIENT_ID,
+		},
+		function (parsedToken, googleId, done) {
+			dbConnection.query(`SELECT * from USER WHERE google_sub=${parsedToken.sub}`, (error, rows, fild) => {
+				if (error) done(error, false);
+
+				const user: User = rows[0];
+				if (!!user) {
+					done(null, false);
+				} else {
+					return createUser(
+						{
+							username: null,
+							password: null,
+							googlesub: parsedToken.sub,
+							email: parsedToken.email,
+						},
+						(user) => {
+							done(null, user);
+						},
+					);
+				}
+			});
+		},
+	),
+);
+
+passport.use(
+	'local_register',
 	new LocalStrategy({ passReqToCallback: true }, (req, username, password, done) => {
-		getUser(username, password, (_, rows, __) => {
+		getUser(username, (_, rows, __) => {
 			const user: User = rows[0];
 			if (!!user) {
 				return done(null, false);
 			} else {
-				return createUser(username, UserUtils.getEncrypted('sha1', password), (user) => {
-					done(null, user);
-				});
+				return createUser(
+					{
+						username,
+						password: UserUtils.getEncrypted('sha1', password),
+					},
+					(user) => {
+						done(null, user);
+					},
+				);
 			}
 		});
 	}),
@@ -43,7 +102,7 @@ passport.use(
 	'local_login',
 	new LocalStrategy(function (username, password, done) {
 		let encryptedPw = UserUtils.getEncrypted('sha1', password);
-		getUser(username, password, (_, rows, __) => {
+		getUser(username, (_, rows, __) => {
 			const user: User = rows[0];
 
 			if (!user || user?.password !== encryptedPw) {
