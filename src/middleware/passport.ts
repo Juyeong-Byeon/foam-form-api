@@ -33,12 +33,14 @@ passport.use(
 		},
 		function (parsedToken, googleId, done) {
 			dbConnection.query(`SELECT * from USER WHERE google_sub=${parsedToken.sub}`, (error, rows, fild) => {
+				console.log(rows);
 				if (error) done(error, false);
 
 				const user: User = rows[0];
 				if (!!user) {
 					done(null, user);
 				} else {
+					done(null, false);
 				}
 			});
 		},
@@ -79,8 +81,11 @@ passport.use(
 passport.use(
 	'local_register',
 	new LocalStrategy({ passReqToCallback: true }, (req, username, password, done) => {
-		getUser(username, (_, rows, __) => {
-			const user: User = rows[0];
+		getUser(username, (error, rows, __) => {
+			const user: User = rows && rows[0];
+			console.log(error);
+			if (error) return done(error, false);
+
 			if (!!user) {
 				return done(null, false);
 			} else {
@@ -90,6 +95,7 @@ passport.use(
 						password: UserUtils.getEncrypted('sha1', password),
 					},
 					(user) => {
+						console.log(username);
 						done(null, user);
 					},
 				);
