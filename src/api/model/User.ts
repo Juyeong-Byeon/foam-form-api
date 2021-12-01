@@ -17,6 +17,5 @@ class User {
 	}
 }
 
-export type loginType = 'guest' | 'google' | 'integrated';
 
 export default User;

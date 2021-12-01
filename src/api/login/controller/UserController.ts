@@ -1,39 +1,37 @@
-import User from '../model/User';
+import User from '../../model/User';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
+import {AuthResponse} from '../model/AuthResponse';
 
 namespace UserController {
 	export async function signUp(req, res, next) {
 		passport.authenticate('local_register', { session: false }, (err: Error, user: User, _) => {
+
 			if (err) {
-				res.status(500);
+				res.status(500).send(new AuthResponse('ERROR',null));
 			} else if (!user) {
-				res.status(200).send({ success: false, message: '이미 가입된 이메일입니다.' });
+				res.status(200).send(new AuthResponse('EXIST',null));
 			} else {
-				res.status(200).send({ success: true, message: '정상적으로 회원가입 되었습니다.' });
+				res.status(200).send(new AuthResponse('SUCCESS',null));
 			}
 		})(req, res, next);
 	}
 	export function signIn(req, res, next) {
 		passport.authenticate('local_login', { session: false }, (error: Error, user: User, _) => {
 			if (error) {
-				res.status(500).send(error);
+				res.status(500).send(new AuthResponse('ERROR',null));
 			}
 
 			req.login(user, { session: false }, (err) => {
 				if (err) {
-					res.status(500).send(err);
+					res.status(500).send(new AuthResponse('ERROR',null));
 				} else if (!user) {
-					res.status(200).json({
-						message: '로그인에 실패했습니다.',
-						success: false,
-					});
+					res.status(200).send(new AuthResponse('WRONG_PW_OR_ID',null));
 				}
-
 				const token = jwt.sign({ user }, process.env.JWT_SECRET, {
 					expiresIn: '1h',
 				});
-				res.status(200).json({ userToken: token, success: true });
+				res.status(200).json(new AuthResponse('SUCCESS',{userToken:token}));
 			});
 		})(req, res, next);
 	}
@@ -41,37 +39,32 @@ namespace UserController {
 	export async function signUpWithGoogle(req, res, next) {
 		passport.authenticate('google_register', { session: false }, (err: Error, user: User, _) => {
 			if (err) {
-				res.status(500);
+				res.status(500).send(new AuthResponse('ERROR',null));
 			} else if (!user) {
-				res.status(200).send({ success: false, message: '이미 가입된 이메일입니다.' });
+				res.status(200).send(new AuthResponse('EXIST',null));
 			} else {
-				res.status(200).send({ success: true, message: '정상적으로 회원가입 되었습니다.' });
+				res.status(200).json(new AuthResponse('SUCCESS',null));
 			}
 		})(req, res, next);
 	}
 
 	export function signInWithGoogle(req, res, next) {
-		console.log('!');
 		passport.authenticate('google_login', { session: false }, (error: Error, user: User, _) => {
-			console.log('!!');
 			if (error) {
-				res.status(500).send(error);
+				res.status(500).send(new AuthResponse('ERROR',null));
 			}
 
 			req.login(user, { session: false }, (err) => {
 				if (err) {
-					res.status(500).send(err);
+					res.status(500).send(new AuthResponse('ERROR',null));
 				} else if (!user) {
-					res.status(200).json({
-						message: '로그인에 실패했습니다.',
-						success: false,
-					});
+					res.status(200).send(new AuthResponse('WRONG_PW_OR_ID',null))
 				}
 
 				const token = jwt.sign({ user }, process.env.JWT_SECRET, {
 					expiresIn: '1h',
 				});
-				res.status(200).json({ userToken: token, success: true });
+				res.status(200).json(new AuthResponse('SUCCESS',{userToken:token}));
 			});
 		});
 	}
@@ -79,12 +72,12 @@ namespace UserController {
 	export function checkIsLoggedIn(req, res, next) {
 		passport.authenticate('jwt', { session: false }, (err, user) => {
 			if (err) {
-				res.status(500).send('internal error');
+				res.status(500).send(new AuthResponse('ERROR',null));
 			} else if (0 < user.idx) {
 				req.app.locals.user = user;
 				next();
 			} else {
-				res.status(403).send('로그인 필요');
+				res.status(403).send(new AuthResponse('LOGIN_REQUIRE',null));
 			}
 		})(req, res, next);
 	}

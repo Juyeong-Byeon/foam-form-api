@@ -1,7 +1,7 @@
 import { createUser, getUser } from '../db/queryUtils';
 
 import GoogleTokenStrategy from 'passport-google-id-token';
-import User from '../api/login/model/User';
+import User from '../api/model/User';
 import { UserUtils } from '../utils/UserUtils';
 import _LocalStrategy from 'passport-local';
 import dbConnection from '../db/sqlconnection';

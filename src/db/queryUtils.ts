@@ -1,4 +1,4 @@
-import User from '../api/login/model/User';
+import User from '../api/model/User';
 import dbConnection from './sqlconnection';
 
 export function getUser(username: string, callback: (error, rows, fild) => void) {
