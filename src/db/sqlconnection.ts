@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
 
 import mysql from 'mysql';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path : path.resolve(__dirname,"../../.env") });
 const DBConfig =
 	process.env.MODE === 'PRODUCT'
 		? {
